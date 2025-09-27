@@ -57,9 +57,9 @@ jobs:
         if: github.event.inputs.push_to_registry == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.IMAGE_NAME }}-${{ github.event.inputs.image_tag }}-${{ env.TARGET_PLATFORM }}
+          name: my-artifact
           path: /tmp/image.tar
-          retention-days: 30
+          retention-days: 1
 
       - name: Display image info
         run: |
