@@ -12,7 +12,6 @@ RUN apt-get update && \
         build-essential \
         gcc \
         g++ \
-        openjdk-11-jdk \
         python3 \
         python3-pip \
         && rm -rf /var/lib/apt/lists/*
