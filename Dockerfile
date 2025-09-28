@@ -20,7 +20,7 @@ RUN apt-get update && \
         ca-certificates \
         sudo \
         openjdk-17-jdk \
-        gdb && \  # 添加GDB调试器
+        gdb && \
     # 创建python符号链接
     ln -sf /usr/bin/python3 /usr/bin/python && \
     # 安装 PHP 相关依赖和仓库
