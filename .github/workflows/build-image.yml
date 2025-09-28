@@ -1,4 +1,4 @@
-name: Build Code-Server Environment Image
+name: ARM64 Code-Server Environment Image
 
 on:
   workflow_dispatch:
