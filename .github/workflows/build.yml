@@ -53,12 +53,20 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Compress tar to tar.gz
+        if: github.event.inputs.push_to_registry == 'false'
+        run: |
+          echo "正在压缩 tar 文件为 tar.gz 格式..."
+          gzip -c /tmp/image.tar > /tmp/image.tar.gz
+          echo "压缩完成！原始文件大小: $(ls -lh /tmp/image.tar | awk '{print $5}')"
+          echo "压缩后文件大小: $(ls -lh /tmp/image.tar.gz | awk '{print $5}')"
+
       - name: Save image as artifact
         if: github.event.inputs.push_to_registry == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
-          path: /tmp/image.tar
+          name: docker-image-compressed
+          path: /tmp/image.tar.gz
           retention-days: 1
 
       - name: Display image info
@@ -71,4 +79,7 @@ jobs:
             echo "已推送到 Docker Hub"
           else
             echo "镜像已保存为工作流产物，可在 Artifacts 中下载"
+            echo "提供两种格式:"
+            echo "  - docker-image-compressed: 压缩后的 tar.gz 文件（推荐）"
+            echo "  - docker-image-original: 原始 tar 文件"
           fi
