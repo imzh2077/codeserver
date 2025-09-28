@@ -60,16 +60,11 @@ RUN update-alternatives --set php /usr/bin/php8.4
 
 # 安装 OpenJDK 17 和 21
 RUN apt-get update && \
-    # 安装软件属性通用包（用于add-apt-repository）
-    apt-get install -y software-properties-common && \
-    # 添加OpenJDK官方仓库
-    add-apt-repository -y ppa:openjdk-r/ppa && \
-    apt-get update && \
-    # 安装OpenJDK 17和21
-    apt-get install -y \
-        openjdk-17-jdk \
-        openjdk-21-jdk \
-        && \
+        apt-get install -y --no-install-recommends openjdk-17-jdk openjdk-21-jdk && \
+        update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java && \
+        update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     # 设置默认JDK为21
     update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java && \
     update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac && \
