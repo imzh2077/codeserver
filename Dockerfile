@@ -58,9 +58,29 @@ RUN apt-get update && \
 # 设置 PHP 替代版本（默认使用 PHP 8.4）
 RUN update-alternatives --set php /usr/bin/php8.4
 
-# 确保coder用户有sudo权限（基础镜像中已存在coder用户）
-#RUN usermod -aG sudo coder && \
-#    echo '%sudo ALL=(ALL) #NOPASSWD:ALL' >> /etc/sudoers
+# 安装 JDK 17 和 JDK 21
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    # 添加 Oracle JDK 仓库（或者使用 OpenJDK）
+    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
+    echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list && \
+    apt-get update && \
+    # 安装 OpenJDK 17 和 21
+    apt-get install -y adoptopenjdk-17-hotspot adoptopenjdk-21-hotspot && \
+    # 设置默认 JDK 为 21
+    update-alternatives --set java /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/java && \
+    update-alternatives --set javac /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/javac && \
+    rm -rf /var/lib/apt/lists/*
+
+# 设置 JAVA_HOME 环境变量
+ENV JAVA_HOME=/usr/lib/jvm/adoptopenjdk-21-hotspot
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# 创建 alternatives 以便切换 JDK 版本
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/adoptopenjdk-17-hotspot/bin/java 1 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/adoptopenjdk-17-hotspot/bin/javac 1 && \
+    update-alternatives --install /usr/bin/java java /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/java 2 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/javac 2
 
 # 切换到coder用户安装nvm和Node.js
 USER coder
@@ -116,7 +136,9 @@ ENV LC_ALL=C.UTF-8
 RUN echo "=== 验证安装结果 ===" && \
     python3 --version && \
     php --version && \
-    . $NVM_DIR/nvm.sh && node --version && npm --version
+    . $NVM_DIR/nvm.sh && node --version && npm --version && \
+    java -version && \
+    javac -version
 
 # 创建启动脚本，确保nvm环境正确加载
 RUN cat > /home/coder/start.sh << 'EOF'
