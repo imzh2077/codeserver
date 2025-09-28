@@ -17,14 +17,14 @@ RUN apt-get update && \
         && rm -rf /var/lib/apt/lists/*
 
 # 安装 Python 3.13
-#RUN wget https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz && \
-#    tar -xzf Python-3.13.0.tgz && \
-#    cd Python-3.13.0 && \
-#    ./configure --enable-optimizations && \
-#    make -j$(nproc) && \
-#    make install && \
-#    cd .. && \
-#    rm -rf Python-3.13.0*
+RUN wget https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz && \
+    tar -xzf Python-3.13.0.tgz && \
+    cd Python-3.13.0 && \
+    ./configure --enable-optimizations && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf Python-3.13.0*
 
 # 安装 NVM 和 Node.js 版本
 ARG NODE_VERSION="16 18 20 22"
