@@ -42,7 +42,7 @@ ENTRYPOINT ["bash", "-c", "source $NVM_DIR/nvm.sh && exec \"$@\"", "--"]
 CMD ["/bin/bash"]
 
 RUN mv /root/.nvm/* /usr/local/.nvm
-NVM_DIR="/usr/local/.nvm"
+ENV NVM_DIR="/usr/local/.nvm"
 RUN source ~/.bashrc
 
 export NVM_DIR="/usr/local/.nvm"
