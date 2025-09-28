@@ -34,7 +34,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.event.inputs.image_tag }}
             ${{ env.IMAGE_NAME }}:latest
           push: ${{ github.event.inputs.push_to_registry == 'true' }}
-          outputs: type=docker,dest=/tmp/code-server-with-env.tar
+          outputs: type=docker,dest=/tmp/code-server-with-env_arm64.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: code-server-with-env
-          path: /tmp/code-server-with-env.tar
+          path: /tmp/code-server-with-env_arm64.tar
           retention-days: 1
 
       - name: Display image info
