@@ -17,7 +17,7 @@ on:
         default: 'false'
 
 env:
-  IMAGE_NAME: code-server-dev-env
+  IMAGE_NAME: imzh2077/code-server-with-env
   TARGET_PLATFORM: 'linux/arm64'
 
 jobs:
