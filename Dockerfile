@@ -1,4 +1,4 @@
-FROM codercom/code-server:4.104.1
+FROM codercom/code-server:latest
 
 USER root
 
@@ -58,29 +58,32 @@ RUN apt-get update && \
 # 设置 PHP 替代版本（默认使用 PHP 8.4）
 RUN update-alternatives --set php /usr/bin/php8.4
 
-# 安装 JDK 17 和 JDK 21
+# 安装 OpenJDK 17 和 21
 RUN apt-get update && \
-    apt-get install -y wget gnupg && \
-    # 添加 Oracle JDK 仓库（或者使用 OpenJDK）
-    wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - && \
-    echo "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/adoptopenjdk.list && \
+    # 安装软件属性通用包（用于add-apt-repository）
+    apt-get install -y software-properties-common && \
+    # 添加OpenJDK官方仓库
+    add-apt-repository -y ppa:openjdk-r/ppa && \
     apt-get update && \
-    # 安装 OpenJDK 17 和 21
-    apt-get install -y adoptopenjdk-17-hotspot adoptopenjdk-21-hotspot && \
-    # 设置默认 JDK 为 21
-    update-alternatives --set java /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/java && \
-    update-alternatives --set javac /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/javac && \
+    # 安装OpenJDK 17和21
+    apt-get install -y \
+        openjdk-17-jdk \
+        openjdk-21-jdk \
+        && \
+    # 设置默认JDK为21
+    update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java && \
+    update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac && \
     rm -rf /var/lib/apt/lists/*
 
-# 设置 JAVA_HOME 环境变量
-ENV JAVA_HOME=/usr/lib/jvm/adoptopenjdk-21-hotspot
+# 设置 JAVA_HOME 环境变量（默认使用JDK 21）
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-# 创建 alternatives 以便切换 JDK 版本
-RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/adoptopenjdk-17-hotspot/bin/java 1 && \
-    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/adoptopenjdk-17-hotspot/bin/javac 1 && \
-    update-alternatives --install /usr/bin/java java /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/java 2 && \
-    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/adoptopenjdk-21-hotspot/bin/javac 2
+# 配置JDK版本切换（可选配置）
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1171 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac 1171 && \
+    update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-21-openjdk-amd64/bin/java 1211 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac 1211
 
 # 切换到coder用户安装nvm和Node.js
 USER coder
@@ -138,7 +141,42 @@ RUN echo "=== 验证安装结果 ===" && \
     php --version && \
     . $NVM_DIR/nvm.sh && node --version && npm --version && \
     java -version && \
-    javac -version
+    javac -version && \
+    echo "JAVA_HOME: $JAVA_HOME"
+
+# 创建JDK版本切换脚本
+RUN cat > /home/coder/switch-jdk.sh << 'EOF'
+#!/bin/bash
+echo "可用的JDK版本:"
+echo "1) OpenJDK 17"
+echo "2) OpenJDK 21"
+echo -n "请选择JDK版本 (1 或 2): "
+read choice
+
+case $choice in
+    1)
+        sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+        sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        echo "已切换到 OpenJDK 17"
+        ;;
+    2)
+        sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+        sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
+        export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+        echo "已切换到 OpenJDK 21"
+        ;;
+    *)
+        echo "无效选择，保持当前版本"
+        ;;
+esac
+
+echo "当前Java版本:"
+java -version
+echo "JAVA_HOME: $JAVA_HOME"
+EOF
+
+RUN chmod +x /home/coder/switch-jdk.sh
 
 # 创建启动脚本，确保nvm环境正确加载
 RUN cat > /home/coder/start.sh << 'EOF'
@@ -149,6 +187,17 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
     # 设置默认Node.js版本
     nvm use default
 fi
+
+# 显示当前环境信息
+echo "=== 开发环境信息 ==="
+echo "Node.js版本: $(node --version)"
+echo "npm版本: $(npm --version)"
+echo "Python版本: $(python3 --version)"
+echo "PHP版本: $(php --version | head -n1)"
+echo "Java版本: $(java -version 2>&1 | head -n1)"
+echo "JAVA_HOME: $JAVA_HOME"
+echo "=================="
+
 # 启动code-server
 exec code-server --bind-addr=0.0.0.0:8080 .
 EOF
