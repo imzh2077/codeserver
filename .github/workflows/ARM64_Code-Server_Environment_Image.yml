@@ -39,7 +39,6 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Save image as artifact
-        if: github.event.inputs.push_to_registry == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: code-server-with-env
