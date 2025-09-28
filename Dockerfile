@@ -60,7 +60,7 @@ RUN update-alternatives --set php /usr/bin/php8.4
 
 # 确保coder用户有sudo权限（基础镜像中已存在coder用户）
 #RUN usermod -aG sudo coder && \
-    echo '%sudo ALL=(ALL) #NOPASSWD:ALL' >> /etc/sudoers
+#    echo '%sudo ALL=(ALL) #NOPASSWD:ALL' >> /etc/sudoers
 
 # 切换到coder用户安装nvm和Node.js
 USER coder
