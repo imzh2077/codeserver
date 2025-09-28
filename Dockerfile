@@ -19,7 +19,8 @@ RUN apt-get update && \
         lsb-release \
         ca-certificates \
         sudo \
-        openjdk-17-jdk && \
+        openjdk-17-jdk \
+        gdb && \  # 添加GDB调试器
     # 创建python符号链接
     ln -sf /usr/bin/python3 /usr/bin/python && \
     # 安装 PHP 相关依赖和仓库
@@ -79,10 +80,12 @@ USER root
 RUN chown -R coder:coder /home/coder && \
     chmod -R 755 /home/coder && \
     echo "=== 验证安装结果 ===" && \
+    python --version && \
     python3 --version && \
     php --version && \
     java -version && \
-    javac -version
+    javac -version && \
+    gdb --version  # 验证GDB安装
 
 # 最终切换回coder用户
 USER coder
