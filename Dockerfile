@@ -27,17 +27,19 @@ RUN wget https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz && \
     rm -rf Python-3.13.0*
 
 # 安装 NVM 和 Node.js 版本
-ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSIONS="16 18 20 22"
-
-RUN mkdir -p $NVM_DIR && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && \
-    . $NVM_DIR/nvm.sh && \
-    for version in $NODE_VERSIONS; do nvm install $version; done && \
-    nvm alias default 22
-
-# 将 NVM 添加到 PATH
-ENV PATH $NVM_DIR/versions/node/v22/bin:$PATH
+ARG NODE_VERSION="16 18 20 22"
+# install curl
+RUN apt update && apt install curl -y
+# install nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# set env
+ENV NVM_DIR=/root/.nvm
+# install node
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION"
+# set ENTRYPOINT for reloading nvm-environment
+ENTRYPOINT ["bash", "-c", "source $NVM_DIR/nvm.sh && exec \"$@\"", "--"]
+# set cmd to bash
+CMD ["/bin/bash"]
 
 # 安装 PHP 7.4 和 8.4
 RUN apt-get update && \
