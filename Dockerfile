@@ -2,11 +2,6 @@ FROM codercom/code-server:4.104.1
 
 USER root
 
-# 创建coder用户并设置权限
-RUN adduser --disabled-password --gecos '' coder && \
-    adduser coder sudo && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 # 安装系统依赖
 RUN apt-get update && \
     apt-get install -y \
@@ -62,6 +57,10 @@ RUN apt-get update && \
 
 # 设置 PHP 替代版本（默认使用 PHP 8.4）
 RUN update-alternatives --set php /usr/bin/php8.4
+
+# 确保coder用户有sudo权限（基础镜像中已存在coder用户）
+#RUN usermod -aG sudo coder && \
+    echo '%sudo ALL=(ALL) #NOPASSWD:ALL' >> /etc/sudoers
 
 # 切换到coder用户安装nvm和Node.js
 USER coder
@@ -123,9 +122,11 @@ RUN echo "=== 验证安装结果 ===" && \
 RUN cat > /home/coder/start.sh << 'EOF'
 #!/bin/bash
 # 加载nvm环境
-source $NVM_DIR/nvm.sh
-# 设置默认Node.js版本
-nvm use default
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    source $NVM_DIR/nvm.sh
+    # 设置默认Node.js版本
+    nvm use default
+fi
 # 启动code-server
 exec code-server --bind-addr=0.0.0.0:8080 .
 EOF
