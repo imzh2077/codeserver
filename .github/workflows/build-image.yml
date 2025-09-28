@@ -7,17 +7,9 @@ on:
         description: '镜像标签（例如：v1.0.0）'
         required: true
         default: 'latest'
-      push_to_registry:
-        description: '是否推送到Docker Hub'
-        required: true
-        type: choice
-        options:
-          - 'false'
-          - 'true'
-        default: 'false'
 
 env:
-  IMAGE_NAME: imzh2077/code-server-with-env
+  IMAGE_NAME: code-server-with-env
   TARGET_PLATFORM: 'linux/arm64'
 
 jobs:
@@ -32,13 +24,6 @@ jobs:
         with:
           platforms: linux/arm64
 
-      - name: Log in to Docker Hub (可选)
-        if: github.event.inputs.push_to_registry == 'true'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -49,7 +34,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.event.inputs.image_tag }}
             ${{ env.IMAGE_NAME }}:latest
           push: ${{ github.event.inputs.push_to_registry == 'true' }}
-          outputs: type=docker,dest=/tmp/image.tar
+          outputs: type=docker,dest=/tmp/code-server-with-env.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -57,8 +42,8 @@ jobs:
         if: github.event.inputs.push_to_registry == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
-          path: /tmp/image.tar
+          name: code-server-with-env
+          path: /tmp/code-server-with-env.tar
           retention-days: 1
 
       - name: Display image info
