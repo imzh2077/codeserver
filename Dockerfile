@@ -41,15 +41,15 @@ ENTRYPOINT ["bash", "-c", "source $NVM_DIR/nvm.sh && exec \"$@\"", "--"]
 # set cmd to bash
 CMD ["/bin/bash"]
 
-mv /root/.nvm/* /usr/local/.nvm
+RUN mv /root/.nvm/* /usr/local/.nvm
 NVM_DIR="/usr/local/.nvm"
-source ~/.bashrc
+RUN source ~/.bashrc
 
 export NVM_DIR="/usr/local/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-source ~/.bashrc
+RUN source ~/.bashrc
 
 # 安装 PHP 7.4 和 8.4
 RUN apt-get update && \
