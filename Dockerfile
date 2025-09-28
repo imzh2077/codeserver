@@ -20,6 +20,8 @@ RUN apt-get update && \
         ca-certificates \
         sudo \
         openjdk-17-jdk && \
+    # 创建python符号链接
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     # 安装 PHP 相关依赖和仓库
     apt-get install -y lsb-release ca-certificates && \
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
