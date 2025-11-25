@@ -2,7 +2,7 @@ FROM codercom/code-server:latest
 
 USER root
 
-# 合并系统依赖安装、OpenJDK 17 和 PHP 安装
+# 合并系统依赖安装和环境安装
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         iputils-ping dnsutils net-tools iproute2 tcpdump netcat-openbsd traceroute mtr-tiny iperf3 nmap telnet openssh-client \ 
@@ -15,10 +15,7 @@ RUN apt-get update && \
     echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list && \
     apt-get update && \
     apt-get install -y  \
-        php7.4 php7.4-cli php7.4-common php7.4-curl php7.4-xml php7.4-mbstring php7.4-zip \
         php8.4 php8.4-cli php8.4-common php8.4-curl php8.4-xml php8.4-mbstring php8.4-zip && \
-    # 设置 PHP 替代版本（默认使用 PHP 8.4）
-    update-alternatives --set php /usr/bin/php8.4 && \
     # 清理
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -30,7 +27,7 @@ WORKDIR /home/coder
 # 设置环境变量
 ENV NVM_DIR=/home/coder/.nvm
 ENV NVM_VERSION=0.40.3
-ENV NODE_VERSIONS="16 18 20 22"
+ENV NODE_VERSIONS="22"
 
 # 合并 nvm 安装和配置
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash && \
@@ -38,14 +35,14 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.
     . $NVM_DIR/nvm.sh && \
     for version in $NODE_VERSIONS; do nvm install $version; done && \
     nvm install-latest-npm && \
-    nvm use 18 && \
-    nvm alias default 18 && \
+    nvm use 22 && \
+    nvm alias default 22 && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> /home/coder/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> /home/coder/.bashrc && \
     echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> /home/coder/.bashrc
 
 # 将nvm路径添加到PATH环境变量
-ENV PATH=$NVM_DIR/versions/node/v18/bin:$PATH
+ENV PATH=$NVM_DIR/versions/node/v22/bin:$PATH
 
 # 切换回root用户进行权限设置
 USER root
@@ -57,8 +54,6 @@ RUN chown -R coder:coder /home/coder && \
     python --version && \
     python3 --version && \
     php --version && \
-    java -version && \
-    javac -version && \
     gdb --version  # 验证GDB安装
 
 # 最终切换回coder用户
