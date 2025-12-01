@@ -9,7 +9,7 @@ on:
         default: '1.0.0'
 
 env:
-  IMAGE_NAME: geyser
+  IMAGE_NAME: codeserver
   TARGET_PLATFORM: 'linux/amd64'
   REGISTRY: ghcr.io
 
