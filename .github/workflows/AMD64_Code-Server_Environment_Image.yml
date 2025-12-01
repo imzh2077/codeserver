@@ -1,4 +1,4 @@
-name: GHCR Image
+name: AMD64 Code-Server Environment Image
 
 on:
   workflow_dispatch:
