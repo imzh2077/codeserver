@@ -3,7 +3,7 @@ From debian:13
 RUN apt-get update \
   && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh \
     iputils-ping dnsutils net-tools iproute2 tcpdump netcat-openbsd traceroute mtr-tiny iperf3 nmap telnet iotop lsof sysstat file tree \
-    gnupg software-properties-common build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk gdb \
+    gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk gdb \
   && git lfs install \
   # 创建python符号链接
   && ln -sf /usr/bin/python3 /usr/bin/python \
