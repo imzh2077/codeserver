@@ -1,3 +1,4 @@
+ARG UPSTREAM_VERSION
 FROM codercom/code-server:${UPSTREAM_VERSION}
 
 USER root
