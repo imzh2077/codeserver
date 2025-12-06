@@ -3,13 +3,14 @@ From debian:13
 RUN apt-get update \
   && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh \
     iputils-ping dnsutils net-tools iproute2 tcpdump netcat-openbsd traceroute mtr-tiny iperf3 nmap telnet iotop lsof sysstat file tree \
-    gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk gdb \
+    gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk openjdk-25-jdk gdb \
   && git lfs install \
   # 创建python符号链接
   && ln -sf /usr/bin/python3 /usr/bin/python \
   # 安装 PHP 相关依赖和仓库
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
+  && apt-get update \
   && apt-get install -y  \
     php7.4 php7.4-cli php7.4-common php7.4-curl php7.4-xml php7.4-mbstring php7.4-zip \
     php8.4 php8.4-cli php8.4-common php8.4-curl php8.4-xml php8.4-mbstring php8.4-zip \
