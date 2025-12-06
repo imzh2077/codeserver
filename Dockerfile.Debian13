@@ -1,7 +1,7 @@
 From debian:13
 
 RUN apt-get update \
-  && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh \
+  && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh bash \
     iputils-ping dnsutils net-tools iproute2 tcpdump netcat-openbsd traceroute mtr-tiny iperf3 nmap telnet iotop lsof sysstat file tree \
     gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk openjdk-25-jdk gdb golang-go \
   && git lfs install \
@@ -45,7 +45,7 @@ RUN ARCH="$(dpkg --print-architecture)" \
   && printf "user: coder\ngroup: coder\n" > /etc/fixuid/config.yml
 
 RUN cat > /usr/bin/entrypoint.sh << 'EOF'
-#!/bin/sh
+#!/bin/bash
 set -eu
 # We do this first to ensure sudo works below when renaming the user.
 # Otherwise the current container UID may not exist in the passwd database.
