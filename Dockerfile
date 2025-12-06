@@ -1,4 +1,4 @@
-FROM codercom/code-server:latest
+FROM codercom/code-server:${UPSTREAM_VERSION}
 
 USER root
 
