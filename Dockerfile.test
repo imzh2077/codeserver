@@ -41,7 +41,7 @@ RUN ARCH="$(dpkg --print-architecture)" \
 COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN ARCH="$(dpkg --print-architecture)" \
   && mkdir -p /tmp/packages/ \
-  && wget -O /tmp/packages/code-server.deb https://github.com/coder/code-server/releases/download/v4.106.3/code-server_4.106.3_$ARCH.deb \
+  && wget -O /tmp/packages/code-server.deb https://github.com/coder/code-server/releases/download/v${UPSTREAM_VERSION}/code-server_${UPSTREAM_VERSION}_$ARCH.deb \
   && dpkg -i /tmp/packages/code-server.deb
 
 # Allow users to have scripts run on container startup to prepare workspace.
