@@ -66,6 +66,8 @@ RUN chown -R coder:coder /home/coder && \
     php --version && \
     java -version && \
     javac -version && \
+    dotnet --version && \
+    go version && \
     gdb --version  # 验证GDB安装
 
 # 最终切换回coder用户
