@@ -48,3 +48,5 @@ jobs:
           outputs: type=image
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            UPSTREAM_VERSION=${{ github.event.inputs.image_tag }}
