@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.Debian13
           platforms: ${{ env.TARGET_PLATFORM }}
           tags: ${{ env.IMAGE_NAME }}:${{ github.event.inputs.image_tag }}
           push: false
