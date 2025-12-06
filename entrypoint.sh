@@ -24,4 +24,11 @@ if [ -d "${ENTRYPOINTD}" ]; then
   find "${ENTRYPOINTD}" -type f -executable -print -exec {} \;
 fi
 
+# 加载nvm环境
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    source $NVM_DIR/nvm.sh
+    # 设置默认Node.js版本
+    nvm use default
+fi
+
 exec dumb-init /usr/bin/code-server "$@"
