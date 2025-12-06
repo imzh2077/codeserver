@@ -3,7 +3,7 @@ From debian:13
 RUN apt-get update \
   && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh \
     iputils-ping dnsutils net-tools iproute2 tcpdump netcat-openbsd traceroute mtr-tiny iperf3 nmap telnet iotop lsof sysstat file tree \
-    gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk openjdk-25-jdk gdb \
+    gnupg build-essential gcc g++ python3 python3-pip ca-certificates openjdk-21-jdk openjdk-25-jdk gdb golang-go \
   && git lfs install \
   # 创建python符号链接
   && ln -sf /usr/bin/python3 /usr/bin/python \
@@ -16,6 +16,12 @@ RUN apt-get update \
     php8.4 php8.4-cli php8.4-common php8.4-curl php8.4-xml php8.4-mbstring php8.4-zip \
   # 设置 PHP 替代版本（默认使用 PHP 8.4）
   && update-alternatives --set php /usr/bin/php8.4 \
+  # 安装 .NET 10 SDK
+  && wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+  && sudo dpkg -i packages-microsoft-prod.deb \
+  && rm packages-microsoft-prod.deb \
+  && apt-get update \
+  && apt-get install -y dotnet-sdk-10.0 \
   # 清理
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -98,15 +104,17 @@ ENV PATH=$NVM_DIR/versions/node/v22/bin:$PATH
 
 # 设置权限并验证安装
 USER root
-RUN chown -R coder:coder /home/coder && \
-    chmod -R 755 /home/coder && \
-    echo "=== 验证安装结果 ===" && \
-    python --version && \
-    python3 --version && \
-    php --version && \
-    java -version && \
-    javac -version && \
-    gdb --version  # 验证GDB安装
+RUN chown -R 1000:1000 /home/coder \
+  && chmod -R 755 /home/coder \
+  && echo "=== 验证安装结果 ===" \
+  && python --version \
+  && python3 --version \
+  && php --version \
+  && java -version \
+  && javac -version \
+  && dotnet --version \
+  && go version \
+  && gdb --version  # 验证GDB安装
 
 EXPOSE 8080
 # This way, if someone sets $DOCKER_USER, docker-exec will still work as
