@@ -1,4 +1,4 @@
-From debian:13
+FROM debian:13
 
 RUN apt-get update \
   && apt-get install -y curl dumb-init git git-lfs htop locales lsb-release man-db nano openssh-client procps sudo vim-tiny wget zsh bash \
