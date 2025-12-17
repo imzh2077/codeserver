@@ -103,7 +103,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.
 
 # pyenv安装和配置
 ENV PYENV_ROOT="/home/coder/.pyenv"
-ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$NVM_DIR/versions/node/v22/bin:$PATH" # 包含node的ENV_PATH部分
+# 包含node的ENV_PATH部分
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$NVM_DIR/versions/node/v22/bin:$PATH"
 RUN curl -fsSL https://pyenv.run | bash \
   && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc \
   && echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
