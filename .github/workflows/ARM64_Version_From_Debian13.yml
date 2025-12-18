@@ -39,6 +39,7 @@ jobs:
           outputs: type=docker,dest=/tmp/CodeServer_ARM64_${{ github.event.inputs.image_tag }}.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          no-cache: true
           build-args: |
             UPSTREAM_VERSION=${{ github.event.inputs.image_tag }}
             DEBIAN_MIRROR=${{ github.event.inputs.debian_mirror }}
