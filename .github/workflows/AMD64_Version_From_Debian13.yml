@@ -6,7 +6,7 @@ on:
       image_tag:
         description: '镜像标签'
         required: true
-        default: '1.0.0'
+        default: '4.100.0'
       debian_mirror:
         description: 'Debian源'
         required: true
@@ -39,6 +39,7 @@ jobs:
           outputs: type=docker,dest=/tmp/CodeServer_AMD64_${{ github.event.inputs.image_tag }}.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          no-cache: true
           build-args: |
             UPSTREAM_VERSION=${{ github.event.inputs.image_tag }}
             DEBIAN_MIRROR=${{ github.event.inputs.debian_mirror }}
