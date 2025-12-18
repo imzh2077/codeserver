@@ -7,6 +7,10 @@ on:
         description: '镜像标签'
         required: true
         default: '1.0.0'
+      debian_mirror:
+        description: 'Debian源'
+        required: true
+        default: 'deb.debian.org'
 
 env:
   IMAGE_NAME: code-server-with-env
@@ -37,6 +41,7 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             UPSTREAM_VERSION=${{ github.event.inputs.image_tag }}
+            DEBIAN_MIRROR=${{ github.event.inputs.debian_mirror }}
 
       - name: Save image as artifact
         uses: actions/upload-artifact@v4
