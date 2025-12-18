@@ -137,6 +137,10 @@ RUN chown -R 1000:1000 /home/coder \
   && go version \
   && gdb --version
 
+# 换源
+ARG DEBIAN_MIRROR
+RUN sed -i 's/deb.debian.org/${DEBIAN_MIRROR}/g' /etc/apt/sources.list.d/debian.sources
+
 EXPOSE 8080
 # This way, if someone sets $DOCKER_USER, docker-exec will still work as
 # the uid will remain the same. note: only relevant if -u isn't passed to
